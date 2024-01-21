@@ -1,0 +1,137 @@
+<div xmlns:th="http://www.thymeleaf.org">
+<h1 class="mt-4 mb-3">Dashboard</h1>
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Total Account</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <div class="small text-white stretched-link" th:text="${totalAccount}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Total Order</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <div class="small text-white stretched-link" th:text="${totalOrder}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Total Product Has Sold</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <span class="small text-white stretched-link" th:text="${totalProductHasSold}">View Details</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Total Revenue</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <span class="small text-white stretched-link" th:text="${#numbers.formatDecimal(revenue,2,'COMMA',0,'POINT')} + ' '+ 'đ'"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Total Weekly Revenue</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <span class="small text-white stretched-link" th:text="${#numbers.formatDecimal(weeklyRevenue,2,'COMMA',0,'POINT')} + ' '+ 'đ'"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">Total Month Revenue</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <span class="small text-white stretched-link" th:text="${#numbers.formatDecimal(monthlyRevenue,2,'COMMA',0,'POINT')} + ' '+ 'đ'"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-area me-1"></i>
+                Area Chart Daily Revenue
+            </div>
+            <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Bar Chart Product Has Sold 
+            </div>
+            <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-area me-1"></i>
+                Pie Chart Revenue Category
+            </div>
+            <div class="card-body"><canvas id="myPieChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Area Chart Revenue Get By Date
+                <form th:action="@{|getByDate|}">
+                    <input type="date" id="startDate" name="startDate">
+                    <input type="date" id="endDate" name="endDate">
+                    <button type="submit" class="btn btn-outline-success">Submit</button>
+                </form>
+            </div>
+            <div class="card-body"><canvas id="myAreaChartDate" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Top 10 best customers
+    </div>
+    <div class="card-body">
+        <table id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>FullName</th>
+                    <th>Contribute</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>No.</th>
+                    <th>FullName</th>
+                    <th>Contribute</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                </tr>
+                </tfoot>
+                <tbody th:each="result,state:${getAmountPaidByAccount}">
+                    <tr>
+                        <td th:text="${state.index + 1 }"></td>
+                        <td th:text="${result[0]}"></td>
+                        <td th:text="${#numbers.formatDecimal(result[1] ,2,'COMMA',0,'POINT')} + ' '+ 'đ'"></td>
+                        <td th:text="${result[2]}"></td>
+                        <td th:text="${result[3]}"></td>
+                    </tr>
+                </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+

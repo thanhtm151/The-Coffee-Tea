@@ -1,0 +1,112 @@
+<!-- Navbar Start -->
+<div class="container-fluid bg-white sticky-top" xmlns:th="http://www.thymeleaf.org">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-white navbar-light py-2 py-lg-0">
+            <a th:href="@{|/home|}" class="navbar-brand">
+                <img class="img-fluid" src="/img/logo.jpg" alt="Logo">
+            </a>
+            <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto">
+                    <a th:href="@{|/home|}" class="nav-item nav-link" th:text="#{navbar.home}"></a>
+                    <a th:href="@{|/store|}" class="nav-item nav-link" id="link-store" th:text="#{navbar.store}"></a>
+                    <!--When customer not login-->
+                    <th:block th:unless="${isAuthenticated}">
+                        <a th:href="@{|/login|}" class="nav-item nav-link" id="link-login"
+                            th:text="#{navbar.login}"></a>
+                        <a th:href="@{|/register|}" class="nav-item nav-link" th:text="#{navbar.register}"></a>
+                    </th:block>
+                    <!--When customer login-->
+                    <th:block th:if="${isAuthenticated}">
+                        <a id="username" class="nav-item nav-link" hidden>[[${username}]]</a>
+                        <a id="id_account" class="nav-item nav-link" hidden>[[${id_account}]]</a>
+                        <a th:href="@{|/orders|}" class="nav-item nav-link" th:text="#{navbar.order}"></a>
+                        <div class="user-icon">
+                            <div class="user-icon-circle">
+                                <img th:src="@{'/img/avatar/' + ${avatar}}" class="img-fluid">
+                            </div>
+                            <span class="user-name" id="fullname">[[${fullname}]]</span>
+                            <!-- Dropdown Menu -->
+                            <div class="user-dropdown">
+                                <ul>
+                                    <!--When customer has role admin or staff-->
+                                    <th:block th:if="${isAdminOrStaff}">
+                                        <a th:href="@{|/admin|}">
+                                            <li th:text="#{navbar.admin}"></li>
+                                        </a>
+                                    </th:block>
+                                    <a th:href="@{|/profile|}">
+                                        <li th:text="#{navbar.myAccount}"></li>
+                                    </a>
+                                    <a th:href="@{|/voucher|}">
+                                        <li th:text="#{navbar.myVouchers}"></li>
+                                    </a>
+                                    <a th:href="@{|/changePassword|}">
+                                        <li th:text="#{navbar.changePassword}"></li>
+                                    </a>
+                                    <a th:href="@{|/logout|}">
+                                        <li th:text="#{navbar.logout}"></li>
+                                    </a>
+                                </ul>
+                            </div>
+                        </div>
+                    </th:block>
+                    <!-- Icon Account và Tên người dùng -->
+                </div>
+                <div class="language">
+                    <a th:class="${#locale.language == 'vi' ? 'language-link active' : 'language-link'}"
+                        href="?lang=vi">
+                        <img src="/img/vietnam.png" alt="Vietnamese Flag" class="language-icon" />
+                    </a>
+                    <span>|</span>
+                    <a th:class="${#locale.language == 'en' ? 'language-link active' : 'language-link'}"
+                        href="?lang=en">
+                        <img src="/img/united-kingdom.png" alt="Vietnamese Flag" class="language-icon" />
+                    </a>
+                </div>
+
+                <div class="border-start ps-4 d-none d-lg-block icons">
+                    <label class="theme-mode">
+                        <input type="checkbox">
+                        <i class="bi bi-moon-fill moon"></i>
+                        <i class="bi bi-brightness-high-fill sun"></i>
+                        <span class="mode-toggle"></span>
+                    </label>
+                    <button th:if="${isAuthenticated}" style="font-size: 24px;" type="button"
+                        class="btn btn-sm p-0 notification-icon" id="notificationIcon">
+                        <i class="bi bi-bell-fill"></i>
+                        <div class="notification-dropdown">
+                            <p class="notification-title"> New notification received </p>
+                            <div th:each="notification : ${notifications}">
+                                <div class="notification-content" style="margin-bottom: 0px;">
+                                    <img th:src="@{'/img/noti-icons/' + ${notification.image}}" class="notification-image">
+                                    <div class="notification-text">
+                                        <p th:text="${notification.notificationTitle}"
+                                            style="font-size: 16px; font-weight: bold; padding-top: 10px; margin-bottom: 3px; text-align: justify;">
+                                        </p>
+                                        <p style="font-size: 14px; display: flex;"
+                                            th:text="${notification.notificationText}">
+                                        </p>
+                                        <p style="font-size: 14px; display: flex; margin-top: -15px;"
+                                            th:text="${#dates.format(notification.createdTime, 'HH:mm dd-MM-yyyy')}">
+                                        </p>
+                                        <!-- Thêm các thông báo khác nếu cần -->
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </button>
+                    <a th:href="@{|/cart|}" class="btn btn-sm ps-3 pb-2 cart-icon" id="link-cart">
+                        <i class="bi bi-bag-fill"></i>
+                        <span style="font-size: 12px;" id="cartCount" class="cart-count">{{cart.count}}</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<!-- Navbar End -->

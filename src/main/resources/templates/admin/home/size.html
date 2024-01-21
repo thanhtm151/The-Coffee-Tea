@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+    <title>Size - Dream Admin</title>
+    <link type="text/css" href="/css/admin/admin.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body class="sb-nav-fixed" ng-app="size-app" ng-controller="size-ctrl">
+    <div th:replace="~{/admin/component/header.html}"></div>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <div th:replace="~{/admin/component/sidebar.html}"></div>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="card mb-4" style="border: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-table me-1"></i> Size Products</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row justify-content-between align-items-center mb-3 mt-1">
+                            <!-- Thanh tìm kiếm ở góc phải -->
+                            <div class="col-md-2">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search by product name..."
+                                        aria-label="Search" aria-describedby="basic-addon2" ng-model="searchProductName"
+                                        ng-change="searchProduct()">
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="text-align: right;">
+                                <a type="button" class="btn btn-danger" th:href="@{|/rest/productsizes/pdf|}">
+                                    <i class="bi bi-filetype-pdf"></i> PDF
+                                </a>
+                                <a type="button" class="btn btn-success" th:href="@{|/rest/productsizes/download|}">
+                                    <i class="bi bi-arrow-down-circle-fill"></i> Excel
+                                </a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered order-datatable text-center">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Number</th>
+                                        <th style="text-align: left;">Name</th>
+                                        <th ng-repeat="size in sizes">{{size.name}}</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat-start="product in filteredProducts">
+                                        <td>{{$index + 1}}</td>
+                                        <td style="text-align: left;">{{product.name}}</td>
+                                        <td ng-repeat="size in sizes">
+                                            <input ng-checked="size_of(product.id, size.id)"
+                                                ng-click="size_changed(product.id, size.id)" type="checkbox">
+                                            <p ng-if="getPrice(product.id, size.id) !== null">
+                                                {{getPrice(product.id, size.id) | number : 0}}đ
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-dark" data-bs-toggle="modal"
+                                                data-bs-target="#priceModal" ng-click="showModal(product.id)">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat-end></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <div class="fw-normal pb-3" style="font-size: 18px;">
+                                Showing {{(currentPage - 1) * pageSize + 1}} to
+                                {{currentPage * pageSize > products.length ? products.length : currentPage * pageSize}}
+                                of {{products.length}} entries
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item" ng-class="{ 'disabled': currentPage === 1 }">
+                                        <a class="page-link" href="#" ng-click="firstPage()" tabindex="-1"
+                                            aria-disabled="true">
+                                            <i class="bi bi-caret-left-fill"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" ng-repeat="page in getPagerNumbers()">
+                                        <a class="page-link" href="#" ng-click="setPage(page)"
+                                            ng-class="{ 'active': currentPage === page }">
+                                            {{page}}
+                                        </a>
+                                    </li>
+                                    <li class="page-item" ng-class="{ 'disabled': currentPage === totalPages }">
+                                        <a class="page-link" href="#" ng-click="lastPage()">
+                                            <i class="bi bi-caret-right-fill"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade size-modal" id="priceModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">
+                                    <i class="bi bi-pencil-square pe-2"></i>
+                                    Edit Size
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-5">
+                                    <div class="col-md-9 offset-sm-2" style="margin-top: 20px;">
+                                        <!-- New content starts here -->
+                                        <div class="row mb-4">
+                                            <div class="form-group d-flex align-items-center">
+                                                <label for="price" class="fw-bold me-3">Price</label>
+                                                <input type="number" class="form-control" id="price" ng-model="price"
+                                                    name="price" placeholder="Product Price" min="0"
+                                                    ng-change="updateProductSizePrice()" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group d-flex align-items-center">
+                                                <label class="fw-bold me-4">Size</label>
+                                                <div>
+                                                    <label class="form-check-label me-3">
+                                                        <input class="form-check-input" type="radio" name="size"
+                                                            ng-model="selectedSize" value="S"
+                                                            ng-change="selectSizeProduct(1)"
+                                                            ng-disabled="radioBlocked.S"> S
+                                                    </label>
+                                                    <label class="form-check-label me-3">
+                                                        <input class="form-check-input" type="radio" name="size"
+                                                            ng-model="selectedSize" value="M"
+                                                            ng-change="selectSizeProduct(2)"
+                                                            ng-disabled="radioBlocked.M"> M
+                                                    </label>
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="radio" name="size"
+                                                            ng-model="selectedSize" value="L"
+                                                            ng-change="selectSizeProduct(3)"
+                                                            ng-disabled="radioBlocked.L"> L
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="add()" class="btn btn-secondary" type="button">Add Price Size</button>
+                                <button ng-click="updatePriceSize()" class="btn btn-success" type="button">Update Price
+                                    Size</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div th:replace="~{/admin/component/footer.html}"></div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script src="/js/admin/size.js"></script>
+</body>
+
+</html>

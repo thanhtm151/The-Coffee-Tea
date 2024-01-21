@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+    <title>Discounts - Dream Admin</title>
+    <link type="text/css" href="/css/admin/admin.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body class="sb-nav-fixed" ng-app="discount-app" ng-controller="discount-ctrl">
+    <div th:replace="~{/admin/component/header.html}"></div>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <div th:replace="~{/admin/component/sidebar.html}"></div>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="card mb-4" style="border: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"> <i class="fas fa-table me-1"></i> Discounts</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#discountModal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row justify-content-between align-items-center mb-1 mt-1">
+                            <!-- Thanh tìm kiếm ở góc phải -->
+                            <div class="col-md-2 ms-auto">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search by name..."
+                                        aria-label="Search" aria-describedby="basic-addon2" ng-model="searchText"
+                                        ng-change="searchDiscount()">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="table-responsive">
+                            <div class="button-container">
+                                <a type="button" class="btn btn-danger" th:href="@{|/rest/discount/pdf|}">
+                                    <i class="bi bi-filetype-pdf"></i> PDF
+                                </a>
+                                <a type="button" class="btn btn-success" th:href="@{|/rest/discount/download|}">
+                                    <i class="bi bi-arrow-down-circle-fill"></i> Excel
+                                </a>
+                            </div>
+                            <table class="table table-hover table-bordered text-center order-datatable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Number</th>
+                                        <th style="text-align: left;">DiscountName</th>
+                                        <th>DiscountNumber</th>
+                                        <th>DiscountPercent</th>
+                                        <th>ActiveDate</th>
+                                        <th>Expiredate</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="no-border-x">
+                                    <tr ng-repeat-start="count in paginatedListDiscount()">
+                                        <td>{{$index + 1}}</td>
+                                        <td style="text-align: left;">{{count.name}}</td>
+                                        <td>{{count.number}}</td>
+                                        <td>{{count.percent*100}} %</td>
+                                        <td>{{count.activeDate | date: 'dd-MM-yyyy'}}</td>
+                                        <td>{{count.expiredDate | date: 'dd-MM-yyyy'}}</td>
+                                        <td ng-if="count.idcategory === 1">Cà phê</td>
+                                        <td ng-if="count.idcategory === 2">Trà</td>
+                                        <td ng-if="count.idcategory === 3">Tráng miệng</td>
+                                        <td ng-if="count.active === true">Đang hoạt động</td>
+                                        <td ng-if="count.active === false">Đã ngưng hoạt động</td>
+                                        <td>
+                                            <button class="btn btn-dark" ng-click="edit(count)" data-bs-toggle="modal"
+                                                data-bs-target="#discountModal">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#delete-this-Modal" ng-click="setDeleteItem(count)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat-end></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 pb-0">
+                            <div class="fw-normal" style="font-size: 18px;">
+                                Showing {{ (currentPageDiscount - 1) * pageSizeDiscount + 1 }} to
+                                {{ currentPageDiscount * pageSizeDiscount > discounts.length ? discounts.length :
+                                currentPageDiscount * pageSizeDiscount }}
+                                of {{ discounts.length }} entries
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item" ng-class="{ 'disabled': currentPageDiscount === 1 }">
+                                        <a class="page-link" href="#" tabindex="-1" ng-click="firstPageDiscount()"
+                                            aria-disabled="true">
+                                            <i class="bi bi-caret-left-fill"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" ng-repeat="page in getPagerDiscount()">
+                                        <a class="page-link" href="#" ng-click="setPageDiscount(page)"
+                                            ng-class="{ 'active': currentPageDiscount === page }">
+                                            {{ page }}
+                                        </a>
+                                    </li>
+                                    <li class="page-item"
+                                        ng-class="{ 'disabled': currentPageDiscount === totalPagesDiscount() }">
+                                        <a class="page-link" href="#" ng-click="lastPageDiscount()">
+                                            <i class="bi bi-caret-right-fill"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade delete-modal" id="delete-this-Modal" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                <i class="bi bi-trash pe-2"></i>
+                                Delete Product
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="text-align: center; align-items: center; margin: 20px auto;">
+                                <p style="font-size: 20px; margin-bottom: 0;">
+                                    Are you sure you want to delete this product?
+                                </p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-danger" aria-label="Close"
+                                    type="button" data-bs-dismiss="modal"
+                                    ng-click="delete(deleteItem)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">
+                                    <i class="bi bi-pencil-square pe-2"></i>
+                                    Edit Discount
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-9 offset-sm-2" style="margin-top: 50px;">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="name" class="fw-bold mb-3">DiscountName</label>
+                                                    <input type="text" class="form-control" id="name"
+                                                        ng-model="form.name" name="name" placeholder="Discount Name" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="name" class="fw-bold mb-3">DiscountNumber</label>
+                                                    <input type="text" class="form-control" id="discountNumber"
+                                                        ng-model="form.number" name="number"
+                                                        placeholder="Discount Number" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="name" class="fw-bold mb-3">DiscountPercent</label>
+                                                    <input type="text" class="form-control" id="DiscountPercent"
+                                                        ng-model="form.percent" name="number"
+                                                        placeholder="Discount Percent" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="fw-bold mb-3">Category</label>
+                                                    <select ng-model="form.idcategory" class="form-control"
+                                                        name="category" id="category">
+                                                        <option value="" selected disabled>Select a category
+                                                        </option>
+                                                        <option ng-repeat="c in cates" ng-value="c.id">{{c.name}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="fw-bold mb-3">ActiveDate</label>
+                                                    <input ng-model="form.activeDate" class="form-control" type="date"
+                                                        name="day" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="fw-bold mb-3">Expiredate</label>
+                                                    <input ng-model="form.expiredDate" class="form-control" type="date"
+                                                        name="day" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="fw-bold mb-3 me-3">Active</label>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio"
+                                                            ng-model="form.active" id="radio1" name="active"
+                                                            ng-value="true" ng-required />
+                                                        <label class="form-check-label" for="radio1">Yes</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio"
+                                                            ng-model="form.active" id="radio2" name="active"
+                                                            ng-value="false" ng-required />
+                                                        <label class="form-check-label" for="radio2">No</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="create()" class="btn btn-primary" type="button">Create</button>
+                                <button ng-click="delete(form)" class="btn btn-danger" type="button">Delete</button>
+                                <button ng-click="update()" class="btn btn-success" type="button">Update</button>
+                                <button ng-click="reset()" class="btn btn-secondary" type="button">New</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div th:replace="~{/admin/component/footer.html}"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/js/admin/discount.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

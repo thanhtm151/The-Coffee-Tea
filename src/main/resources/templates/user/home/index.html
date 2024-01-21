@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--th:fragment="dynamic(main)"-->
+
+<head>
+    <meta charset="utf-8">
+    <title>DREAM - COFFEE AND TEA</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet">
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+</head>
+
+<body ng-app="cart_app" ng-controller="ctrl">
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+    </div>
+    
+    <div th:if="${activeDiscounts != null and activeDiscounts.size() > 0}">
+        <div class="modal fade discountModal" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <img src="/img/gallery/christmas.png" class="img-fluid">
+                        <div class="custom-close-btn" data-bs-dismiss="modal" aria-label="Close"><i
+                                class="bi bi-x-lg"></i></div>
+                        <div class="content-overlay">
+                            <p style="font-size: 40px; margin-bottom: 5px;" class="modal-title fw-bold"
+                                id="discountModalLabel" th:text="${activeDiscounts[0].name}"></p>
+                            <p style="text-align: center;">
+                                <span class="discount-text">Giảm đến </span>
+                                <span style="font-size: 70px;"
+                                    th:text="${#numbers.formatDecimal(activeDiscounts[0].percent * 100, 0, 0)}"></span>
+                                <span style="font-size: 70px;">% </span>
+                                <span class="ms-2" style="font-size: 30px;">tất cả sản phẩm</span>
+                                <br style="margin-bottom: 20px;" />
+                                <span style="font-size: 18px;"
+                                    th:text="'Sự kiện diễn ra từ ' + ${#dates.format(activeDiscounts[0].activeDate, 'dd/MM/yyyy')} + ' đến ' + ${#dates.format(activeDiscounts[0].expiredDate, 'dd/MM/yyyy')}"></span>
+                            </p>
+
+                            <div class="link-discount">
+                                <a class="btn btn-outline-light" th:href="@{|/store|}" target="_blank">Mua ngay!</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Navbar Start -->
+    <div th:replace="~{/user/component/header.html}"></div>
+    <!-- Navbar End -->
+
+    <main th:replace="~{/user/component/main.html}"></main>
+
+    <!-- Footer Start -->
+    <div th:replace="~{/user/component/footer.html}"></div>
+    <!-- Footer End -->
+
+    <!-- Copyright Start -->
+    <div th:replace="~{/user/component/copyright.html}"></div>
+    <!-- Copyright End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-dark btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Cart Template Javascript -->
+    <script src="/js/cart.js"></script>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        openPopup();
+    });
+
+    function openPopup() {
+        var myModal = new bootstrap.Modal(document.getElementById('discountModal'));
+        myModal.show();
+    }
+</script>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+    <title>Product - Dream Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link type="text/css" href="/css/admin/admin.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <!-- Angular -->
+</head>
+
+<body class="sb-nav-fixed" ng-app="category-app" ng-controller="category-ctrl">
+    <div th:replace="~{/admin/component/header.html}"></div>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <div th:replace="~{/admin/component/sidebar.html}"></div>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="card mb-4" style="border-radius: 0px;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Category</h3>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table class="text-center" id="datatablesSimple">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="text-center" style="font-size: 16px;">ID</div>
+                                    </th>
+                                    <th>
+                                        <div class="text-center" style="font-size: 16px; text-align: left;">Name</div>
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="no-border-x" ng-repeat="cate in cates">
+                                <td>{{cate.id}}</td>
+                                <td>
+                                    <p class="fw-semibold" style="text-align: left;">{{cate.name}}</p>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" ng-click="edit(cate)" data-bs-toggle="modal"
+                                        data-bs-target="#myModal">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-danger" ng-click="delete(cate)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">
+                                    <i class="bi bi-pencil-square pe-2"></i>
+                                    Edit Category
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-9 offset-sm-2" style="margin-top: 50px;">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="name" class="fw-bold mb-3">Name</label>
+                                                    <input type="text" class="form-control" id="name"
+                                                        ng-model="form.name" name="name" placeholder="Category Name" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="create()" class="btn btn-primary" type="button">Create</button>
+                                <button ng-click="delete(form)" class="btn btn-danger" type="button">Delete</button>
+                                <button ng-click="update()" class="btn btn-success" type="button">Update</button>
+                                <button ng-click="clearForm()" class="btn btn-secondary" type="button">New</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div th:replace="~{/admin/component/footer.html}"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/js/admin/category.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

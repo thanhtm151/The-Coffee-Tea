@@ -1,0 +1,47 @@
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" xmlns:th="http://www.thymeleaf.org">
+    <!-- Navbar Brand-->
+    <a class="navbar-brand ps-3" th:href="@{|/admin|}">Dream Admin</a>
+    <!-- Sidebar Toggle-->
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+        <i class="fas fa-bars"></i>
+    </button>
+    <!-- Navbar-->
+    <ul class="navbar-nav ms-auto pe-3 me-lg-4">
+        <th:block th:if="${isAdmin}">
+            <li class="nav-item notification-icon" id="notificationIcon">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-bell-fill"></i>
+                </a>
+                <div class="notification-dropdown">
+                    <p class="notification-title">New notification received</p>
+                    <div th:each="notification : ${adminNotifications}">
+                        <div class="notification-content">
+                            <img th:src="@{'/img/noti-icons/' + ${notification.image}}" class="notification-image">
+                            <div class="notification-text">
+                                <p th:text="${notification.notificationTitle}"
+                                    style="font-size: 17px; font-weight: bold; padding-top: 10px; margin-bottom: 3px;">
+                                </p>
+                                <p th:text="${notification.notificationText}"
+                                    style="font-size: 15px; display: flex; margin-bottom: 3px;"></p>
+                                <p th:text="${#dates.format(notification.createdTime, 'HH:mm dd-MM-yyyy')}" style="font-size: 14px; display: flex;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </li>
+        </th:block>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false"><i class="fas fa-user fa-fw"></i>
+                <span style="padding-right:3px;">[[${fullname}]]</span>
+            </a>
+            <ul style="margin-top: 8px;" class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item" th:href="@{|/logout|}">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>

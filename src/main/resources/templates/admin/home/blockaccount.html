@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+    <title>Block Accounts - Dream Admin</title>
+    <link type="text/css" href="/css/admin/admin.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body class="sb-nav-fixed" ng-app="authority-app" ng-controller="authority-ctrl">
+    <div th:replace="~{/admin/component/header.html}"></div>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <div th:replace="~{/admin/component/sidebar.html}"></div>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="card mb-4" style="border: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0"><i class="fas fa-table me-1"></i> Block Accounts</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row justify-content-between align-items-center mb-3 mt-1">
+                            <div class="col-md-2 ms-auto">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
+                                        aria-describedby="basic-addon2" ng-model="searchText"
+                                        ng-change="searchAccounts()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered order-datatable text-center">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Number</th>
+                                        <th>Avatar</th>
+                                        <th>Username</th>
+                                        <th>Firstname</th>
+                                        <th>Lastname</th>
+                                        <th style="text-align: left;">Fullname</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="no-border-x" ng-repeat="acc in paginatedList()">
+                                    <td>{{$index + 1}}</td>
+                                    <td>
+                                        <img class="img-fluid" ng-src="{{'/img/avatar/' + acc.avatar}}"
+                                            style="width: 60px; height: 60px; border: none;">
+                                    </td>
+                                    <td>{{acc.username}}</td>
+                                    <td>{{acc.firstname}}</td>
+                                    <td>{{acc.lastname}}</td>
+                                    <td style="text-align: left;">{{acc.fullname}}</td>
+                                    <td>{{acc.email}}</td>
+                                    <td>{{acc.phone}}</td>
+                                    <td>{{acc.address}}</td>
+                                    <td>
+                                        <button ng-if="!acc.active" class="btn btn-danger"
+                                            ng-click="confirmUnlock(acc)">
+                                            <i class="bi bi-lock-fill"></i>
+                                        </button>
+                                        <button ng-if="acc.active" class="btn btn-dark" ng-click="lockAccount(acc)">
+                                            <i class="bi bi-unlock-fill"></i>
+                                        </button>
+                                        <button class="btn btn-dark mt-1"
+                                            ng-click="openLockDetailsModal(acc.id); setSelectedAccount(acc)">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
+                                    </td>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <div class="fw-normal pb-3" style="font-size: 18px;">
+                                Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ currentPage * pageSize >
+                                listStaff.length ? listStaff.length : currentPage * pageSize }} of {{ listStaff.length
+                                }} entries
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item" ng-class="{ 'disabled': currentPage === 1 }">
+                                        <a class="page-link" href="#" tabindex="-1" ng-click="prevPage()"
+                                            aria-disabled="true">
+                                            <i class="bi bi-caret-left-fill"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" ng-repeat="page in getPager()">
+                                        <a class="page-link" href="#" ng-click="setPage(page)"
+                                            ng-class="{ active: currentPage === page }">{{ page }}</a>
+                                    </li>
+                                    <li class="page-item" ng-class="{ 'disabled': currentPage === totalPages() }">
+                                        <a class="page-link" href="#" ng-click="nextPage()">
+                                            <i class="bi bi-caret-right-fill"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal detail -->
+                <div class="modal fade lock-modal" id="lockDetailsModal" tabindex="-1"
+                    aria-labelledby="lockDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="lockDetailsModalLabel">Account lock details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p style="font-size: 17px;">Number of lock times: {{ lockCount }}</p>
+                                <table class="table order-datatable text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Number</th>
+                                            <th>Lock date</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="lock in lockDetails">
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ lock.banDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                                            <td>{{ lock.reason }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Modal -->
+
+                <!-- Modal lock start -->
+                <div class="modal fade lockreason-modal" id="lockAccountModal" tabindex="-1"
+                    aria-labelledby="lockAccountModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="lockAccountModalLabel">Reason for account lock</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form style="margin: 30px auto;">
+                                    <div class="form-group">
+                                        <label class="fw-bold mb-2" for="lockReason">Reason:</label>
+                                        <input type="text" class="form-control" id="lockReason" ng-model="lockReason">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary"
+                                    ng-click="lockAccountWithReason(selectedAccount)">Lock account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal lock end -->
+
+                <!-- Modal for confirming unlock -->
+                <div class="modal fade delete-modal" id="confirmUnlockModal" tabindex="-1"
+                    aria-labelledby="confirmUnlockModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmUnlockModalLabel">Confirm account unlock</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="vertical-align: middle; text-align: center;">
+                                <p style="margin-bottom: 0; font-size: 18px; margin: 20px auto;">
+                                    Are you sure you want to unlock this account?
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger"
+                                    ng-click="unlockAccount(selectedAccount)">Unlock</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal unlock start -->
+            </main>
+            <div th:replace="~{/admin/component/footer.html}"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script src="/js/admin/authority.js"></script>
+</body>
+
+</html>

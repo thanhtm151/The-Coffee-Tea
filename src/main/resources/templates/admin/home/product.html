@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+    <title>Product - Dream Admin</title>
+    <link type="text/css" href="/css/admin/admin.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <!-- Angular Route-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+</head>
+
+<body class="sb-nav-fixed" ng-app="product_app" ng-controller="product_ctrl">
+    <div th:replace="~{/admin/component/header.html}"></div>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <div th:replace="~{/admin/component/sidebar.html}"></div>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="card mb-4" style="border: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"> <i class="fas fa-table me-1"></i> Products</h4>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row justify-content-between align-items-center mb-1 mt-2">
+                            <!-- Combobox Category ở góc trái -->
+                            <div class="d-flex col-md-3">
+                                <div class="form-group mb-0 me-3">
+                                    <label for="categoryFilter" class="fw-bold pt-2" style="font-size: 13px;">
+                                        Filter by Category:
+                                    </label>
+                                </div>
+                                <div class="form-group mb-0" style="width: 170px;">
+                                    <select class="form-control" id="categoryFilter" ng-model="selectedCategory"
+                                        ng-options="c.id as c.name for c in cates"
+                                        ng-init="selectedCategory = cates[0].id">
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <!-- Combobox Active -->
+                            <div class="col-md-3">
+                                <div class="d-flex">
+                                    <div class="form-group mb-0 me-3">
+                                        <label for="activeFilter" class="fw-bold pt-2" style="font-size: 13px;">
+                                            Filter by Active:
+                                        </label>
+                                    </div>
+                                    <div class="form-group mb-0" style="width: 170px;">
+                                        <select class="form-control" id="activeFilter" ng-model="selectedActive"
+                                            ng-change="filterByActive()">
+                                            <option value="true" selected>True</option>
+                                            <option value="false">False</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Thanh tìm kiếm ở góc phải -->
+                            <div class="col-md-2 ms-auto">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2"
+                                           ng-model="searchTerm" ng-change="searchByName()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <div class="button-container">
+                                <a type="button" class="btn btn-danger" th:href="@{|/rest/products/pdf|}">
+                                    <i class="bi bi-filetype-pdf"></i> PDF
+                                </a>
+                                <a type="button" class="btn btn-success" th:href="@{|/rest/products/download|}">
+                                    <i class="bi bi-arrow-down-circle-fill"></i> Excel
+                                </a>
+                            </div>
+                            <table class="table table-hover table-bordered product-datatable text-center">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width: 100px;">Number</th>
+                                        <th style="width: 100px;">ID</th>
+                                        <th>Image</th>
+                                        <th style="text-align: left;">Name</th>
+                                        <th>Price</th>
+                                        <th>Describe</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Active</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat-start="item in pagedItems">
+                                        <td>{{$index + 1}}</td>
+                                        <td>{{item.id}}</td>
+                                        <td><img class="img-fluid" ng-src="{{'/img/gallery/' + item.image}}"
+                                                style="width: 90px; height: 90px; border: none;"></td>
+                                        <td style="text-align: left;">{{item.name}}</td>
+                                        <td>{{item.price | number: 0}}đ</td>
+                                        <td>
+                                            <div style="text-align: justify; padding: 0 10px;">{{item.describe}}</div>
+                                        </td>
+                                        <td>{{item.name_category}}</td>
+                                        <td>{{item.createDate | date: 'dd-MM-yyyy'}}</td>
+                                        <td>{{item.active}}</td>
+                                        <td>
+                                            <button class="btn btn-dark" ng-click="edit(item)" data-bs-toggle="modal"
+                                                data-bs-target="#myModal">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#delete-this-Modal" ng-click="setDeleteItem(item)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat-end></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <div class="fw-normal pb-3" style="font-size: 18px;">
+                                Showing {{pagination.startIndex + 1}} to {{pagination.endIndex}} of {{items.length}}
+                                entries
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item" ng-class="{ 'disabled': pagination.currentPage === 1 }">
+                                        <a class="page-link" href="#" ng-click="firstPage()">
+                                            <i class="bi bi-caret-left-fill"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" ng-repeat="pageNumber in getPagerNumbers()"
+                                        ng-class="{ 'active': pagination.currentPage === pageNumber }">
+                                        <a class="page-link" href="#" ng-click="setPage(pageNumber)">{{pageNumber}}</a>
+                                    </li>
+                                    <li class="page-item"
+                                        ng-class="{ 'disabled': pagination.currentPage === pagination.totalPages }">
+                                        <a class="page-link" href="#" ng-click="lastPage()">
+                                            <i class="bi bi-caret-right-fill"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade delete-modal" id="delete-this-Modal" tabindex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">
+                                    <i class="bi bi-trash pe-2"></i>
+                                    Delete Product
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div style="text-align: center; align-items: center; margin: 20px auto;">
+                                    <p style="font-size: 20px; margin-bottom: 0;">
+                                        Are you sure you want to delete this product?
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" aria-label="Close"
+                                        type="button" data-bs-dismiss="modal"
+                                        ng-click="delete(deleteItem)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">
+                                    <i class="bi bi-pencil-square pe-2"></i>
+                                    Edit Product
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12 text-center"
+                                        style="display: flex; justify-content: center; align-items: center;">
+                                        <img class="img-fluid" id="imageProduct"
+                                            ng-src="{{'/img/gallery/'+ form.image}}" ng-click="selectImage()"
+                                            style="cursor: pointer;">
+                                        <input type="file" id="hiddenImageInput" style="display: none;" accept="image/*"
+                                            onchange="angular.element(this).scope().imageChanged(this.files)">
+                                    </div>
+                                    <div class="col-md-9 offset-sm-2" style="margin-top: 30px;">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="name" class="fw-bold mb-3">Name</label>
+                                                    <input type="text" class="form-control" id="name"
+                                                        ng-model="form.name" name="name" placeholder="Product Name" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="price" class="fw-bold mb-3">Price</label>
+                                                    <input type="number" class="form-control" id="price"
+                                                        ng-model="form.price" name="price"
+                                                        placeholder="Product Price" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="fw-bold mb-3">Create Date</label>
+                                                    <input ng-model="form.createDate" class="form-control" type="date"
+                                                        name="day" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="category" class="fw-bold mb-3">Category</label>
+                                                    <select ng-model="form.id_category" class="form-control"
+                                                        name="category" id="category">
+                                                        <option value="" selected disabled>Select a category
+                                                        </option>
+                                                        <option ng-repeat="c in cates" ng-value="c.id">{{c.name}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="describe" class="fw-bold mb-3">Describe</label>
+                                            <textarea type="text" class="form-control" id="describe"
+                                                ng-model="form.describe" name="name" placeholder="Describe"
+                                                style="height: 120px;"></textarea>
+                                        </div>
+                                        <div class="form-group mt-4">
+                                            <label class="form-label fw-bold pe-4">Available</label>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" ng-model="form.active"
+                                                    id="radio1" name="active" ng-value="true" ng-required />
+                                                <label class="form-check-label" for="radio1">Yes</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" ng-model="form.active"
+                                                    id="radio2" name="active" ng-value="false" ng-required />
+                                                <label class="form-check-label" for="radio2">No</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="create()" class="btn btn-primary" type="button">Create</button>
+                                <button ng-click="delete(form)" class="btn btn-danger" type="button">Delete</button>
+                                <button ng-click="update()" class="btn btn-success" type="button">Update</button>
+                                <button ng-click="reset()" class="btn btn-secondary" type="button">New</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div th:replace="~{/admin/component/footer.html}"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="/js/admin/product.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

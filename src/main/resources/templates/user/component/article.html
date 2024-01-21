@@ -1,0 +1,20 @@
+<!-- Article Start -->
+<div class="container-xxl py-5" xmlns:th="http://www.thymeleaf.org">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
+                <img class="img-fluid" src="/img/gallery/article.jpg" alt="">
+            </div>
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                <div class="section-title">
+                    <p class="fs-5 fw-medium fst-italic text-primary" th:text="#{article.subtitle}"></p>
+                    <h1 style="font-size: 30px;" class="display-6" th:text="#{article.title}"></h1>
+                </div>
+                <p style="font-size: 18px; text-align: justify;" class="mb-4" th:text="#{article.content1}"></p>
+                <p style="font-size: 18px; text-align: justify;" class="mb-4" th:text="#{article.content2}"></p>
+                <a href="" class="btn btn-primary rounded-pill py-3 px-5" th:text="#{article.readMore}"></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Article End -->

@@ -1,0 +1,49 @@
+<!-- Footer Start -->
+<div class="container-fluid bg-dark footer mt-5 py-5 wow fadeIn" data-wow-delay="0.1s" xmlns:th="http://www.thymeleaf.org">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-3 col-md-6">
+                <h4 class="text-primary mb-4" th:text="#{footer.office}"></h4>
+                <p class="mb-2" th:text="#{footer.address}"></p>
+                <p class="mb-2">+034 7986 261</p>
+                <p class="mb-2">coffeeandteadream@gmail.com</p>
+                <div class="d-flex pt-3">
+                    <a class="btn btn-square btn-primary rounded-circle me-2" href=""><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-square btn-primary rounded-circle me-2" href=""><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-square btn-primary rounded-circle me-2" href=""><i class="fab fa-youtube"></i></a>
+                    <a class="btn btn-square btn-primary rounded-circle me-2" href=""><i
+                            class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <h4 class="text-primary mb-4" th:text="#{footer.quickLinks}"></h4>
+                <a class="btn btn-link" href="" th:text="#{footer.aboutUs}"></a>
+                <a class="btn btn-link" href="" th:text="#{footer.contactUs}"></a>
+                <a class="btn btn-link" href="" th:text="#{footer.ourServices}"></a>
+                <a class="btn btn-link" href="" th:text="#{footer.termsCondition}"></a>
+                <a class="btn btn-link" href="" th:text="#{footer.support}"></a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <h4 class="text-primary mb-4" th:text="#{footer.businessHours}"></h4>
+                <p class="mb-1" th:text="#{footer.monFri}"></p>
+                <h6 class="text-light" th:text="#{footer.monFriHours}"></h6>
+                <p class="mb-1" th:text="#{footer.saturday}"></p>
+                <h6 class="text-light" th:text="#{footer.saturdayHours}"></h6>
+                <p class="mb-1" th:text="#{footer.sunday}"></p>
+                <h6 class="text-light" th:text="#{footer.sundayClosed}"></h6>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <h4 class="text-primary mb-4" th:text="#{footer.newsletter}"></h4>
+                <p th:text="#{footer.newsletterPlaceholder}"></p>
+                <div class="position-relative w-100">
+                    <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text"
+                        th:placeholder="#{footer.newsletterPlaceholder}">
+                    <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2"
+                        th:text="#{footer.signup}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream - The Coffee and Tea</title>
+    <link rel="icon" href="/img/logo.jpg" type="image/x-icon" />
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <!-- <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+    </div> -->
+    <section class="vh-100">
+        <div class="container-fluid h-custom">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-9 col-lg-6 col-xl-5 me-2">
+                    <a th:href="@{|/home|}">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                            class="img-fluid" alt="Sample image">
+                        <p class="text-primary fw-bold text-center" style="font-size: 25px;">
+                            <i class="bi bi-arrow-left pe-2"></i>
+                            Back to Homepage
+                        </p>
+                    </a>
+                </div>
+                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                    <form th:action="@{|/verifi|}" method="post" class="needs-validation" novalidate>
+                        <!-- <div th:if="${message}" class="form-outline mb-4">
+                            <h6 class="text-center text-danger " th:text="${message}"></h6>
+                        </div> -->
+                        <div class="form-floating mb-4">
+                            <input type="text" id="token" class="form-control" name="token" placeholder="Enter OTP"
+                                required>
+                            <label class="form-label" for="token">OTP</label>
+                            <div class="invalid-tooltip tooltip-left">
+                                Please enter your OTP
+                            </div>
+                            <div class="valid-tooltip tooltip-left">
+                                Completed!
+                            </div>
+                        </div>
+
+                        <div class="text-center text-lg-start mt-4 pt-2">
+                            <button type="submit" class="btn btn-primary btn-lg"
+                                style="padding-left: 2rem; padding-right: 2rem;">Submit
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
+
+</html>
